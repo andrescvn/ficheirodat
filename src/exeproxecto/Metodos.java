@@ -34,6 +34,7 @@ public class Metodos {
             while (sc.hasNextLine()) {
                 aux = sc.nextLine().split(",");
                 Alumno al = new Alumno(aux[0], Integer.parseInt(aux[1]));
+                System.out.println(al);
                 if (al.getNota() >= 5) {
                     apro.add(al);
                 }

@@ -50,6 +50,7 @@ public class Metodos {
         try {
             engado = new PrintWriter(new FileWriter("aprobados.dat", true));
             for (int i = 0; i < apro.size(); i++) {
+                System.out.println(apro.get(i));
                 engado.println(apro.get(i).getNome()+","+apro.get(i).getNota());
             }
         } catch (IOException ex) {

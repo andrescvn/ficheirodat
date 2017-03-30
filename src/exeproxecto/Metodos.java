@@ -8,13 +8,18 @@ package exeproxecto;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -27,39 +32,74 @@ public class Metodos {
     PrintWriter engado;
     FileWriter fich;
 
-    public void lerObxetos() {
-        String[] aux;
+    public void lerObxetos(String nomeFich, String nomeFichA) {
+        ObjectInputStream leer = null;
+        ObjectInputStream leerA = null;
+        Alumno aux = null;
+        Alumno auxA = null;
         try {
-            sc = new Scanner(new File("archivo.dat"));
-            while (sc.hasNextLine()) {
-                aux = sc.nextLine().split(",");
-                Alumno al = new Alumno(aux[0], Integer.parseInt(aux[1]));
-                System.out.println(al);
-                if (al.getNota() >= 5) {
-                    apro.add(al);
-                }
+            leer = new ObjectInputStream(new FileInputStream(nomeFich));
+            leerA = new ObjectInputStream(new FileInputStream(nomeFichA));
+            aux = (Alumno) leer.readObject();
+            auxA = (Alumno) leerA.readObject();
+            while (aux != null && auxA != null) {
+                apro.add(aux);
+                System.out.println(auxA.toString());
+                System.out.println(aux.toString());
+                aux = (Alumno) leer.readObject();
+                auxA = (Alumno) leerA.readObject();
             }
         } catch (FileNotFoundException ex) {
-            System.out.println(ex.getMessage());
+            Logger.getLogger(Metodos.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Metodos.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Metodos.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            sc.close();
+            if (leer != null && leerA != null) {
+                try {
+                    leerA.close();
+                    leer.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(Metodos.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
         }
     }
 
-    public void engadir() {
+    public void engadir(String nomeFich, String nomeFichA) {
+        ObjectOutputStream fichero = null;
+        ObjectOutputStream fich = null;
         try {
-            engado = new PrintWriter(new FileWriter("aprobados.dat", true));
-            for (int i = 0; i < apro.size(); i++) {
-                System.out.println(apro.get(i));
-                engado.println(apro.get(i).getNome()+","+apro.get(i).getNota());
+            fich = new ObjectOutputStream(new FileOutputStream(nomeFichA));
+            fichero = new ObjectOutputStream(new FileOutputStream(nomeFich));
+            for (int i = 0; i < 3; i++) {
+                Alumno al = new Alumno(JOptionPane.showInputDialog(null, "Introduce o nome"), Integer.parseInt(JOptionPane.showInputDialog("introduce as notas")));
+                if (al.getNota() >= 5) {
+                    Alumno alc = new Alumno(JOptionPane.showInputDialog(null, "Introduce o nome"), Integer.parseInt(JOptionPane.showInputDialog("introduce as notas")));
+                    fich.writeObject(alc);
+                }
+                fichero.writeObject(al);
             }
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Metodos.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            System.out.println("erro:" + ex.getMessage());
+            Logger.getLogger(Metodos.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            engado.close();
+            if (fich != null && fichero != null) {
+                try {
+                    fichero.close();
+                    fich.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(Metodos.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
     }
-    public void ordenar(){
+
+    public void ordenar() {
         Collections.sort(apro);
     }
 
